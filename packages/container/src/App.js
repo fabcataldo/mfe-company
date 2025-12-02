@@ -1,9 +1,12 @@
-import React from "react";
-import { BrowserRouter } from 'react-router-dom';
+import React, { lazy, Suspense } from "react";
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { StylesProvider, createGenerateClassName } from "@material-ui/core/styles";
 
-import MarketingApp from "./components/MarketingApp";
 import Header from "./components/header/Header";
+import ProgressBar from "./components/ProgressBar";
+
+const MarketingLazy = lazy(() => import('./components/MarketingApp'));
+const AuthLazy = lazy(() => import('./components/AuthApp'));
 
 //optional, but anyway applied for possibly css collitions with other projects/apps that use material-ui
 const generateClassName = createGenerateClassName({
@@ -15,7 +18,13 @@ export default () => {
             <StylesProvider generateClassName={generateClassName}>
                 <div>
                     <Header/>
-                    <MarketingApp/>
+                    
+                    <Suspense fallback={<ProgressBar/>}>
+                        <Switch>
+                            <Route path="/auth" component={AuthLazy}/>
+                            <Route path="/" component={MarketingLazy}/>
+                        </Switch>
+                    </Suspense>
                 </div>
             </StylesProvider>
         </BrowserRouter>
